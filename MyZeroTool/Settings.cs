@@ -18,7 +18,7 @@ namespace MyZeroTool
 
         public static string[] SourceFileExtensions { get; set; } =
         {
-            ".html", ".js", ".ts",
+            ".html", ".js", ".ts", "cshtml",
             ".cs", ".csproj", ".sln", ".config", ".user",
             ".json", ".txt", ".ps1", ".yml", ".nswag", ".conf", "Dockerfile", ".gitignore"
         };
