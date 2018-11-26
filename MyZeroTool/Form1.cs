@@ -49,7 +49,7 @@ namespace MyZeroTool
                     if (subName.Contains(Settings.ExistingCompanyName) || subName.Contains(Settings.ExistingProjectName))
                     {
                         _bw.ReportProgress(0, $"RENAMING DIRECTORY: {StripRootPath(subInfo.FullName)} ...");
-                        subName = subName.Replace(Settings.ExistingCompanyName, Settings.NewCompanyName).Replace(Settings.ExistingProjectName, Settings.NewProjectName);
+                        subName = subName.ReplaceCompanyName(!string.IsNullOrWhiteSpace(tbPN.Text));
                         subInfo.MoveTo(Path.Combine(subInfo.Parent?.FullName ?? "", subName));
                         _bw.ReportProgress(1);
                     }
@@ -73,7 +73,7 @@ namespace MyZeroTool
                 try
                 {
                     _bw.ReportProgress(0, $"RENAMING FILE: {StripRootPath(file)} ...");
-                    File.Move(file, file.Replace(Settings.ExistingCompanyName, Settings.NewCompanyName).Replace(Settings.ExistingProjectName, Settings.NewProjectName));
+                    File.Move(file, file.ReplaceCompanyName(!string.IsNullOrWhiteSpace(tbPN.Text)));
                     _bw.ReportProgress(1);
                 }
                 catch (Exception e)
@@ -96,7 +96,7 @@ namespace MyZeroTool
                     {
                         _bw.ReportProgress(0, $"FILE: {StripRootPath(file)} ...");
                         var text = File.ReadAllText(file);
-                        text = text.Replace(Settings.ExistingCompanyName, Settings.NewCompanyName).Replace(Settings.ExistingProjectName, Settings.NewProjectName);
+                        text = text.ReplaceCompanyName(!string.IsNullOrWhiteSpace(tbPN.Text));
                         File.WriteAllText(file, text);
                         _bw.ReportProgress(1);
                     }
@@ -165,7 +165,7 @@ namespace MyZeroTool
 
         private void btnStartClick(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(tbPath.Text) || string.IsNullOrWhiteSpace(tbCN.Text) || string.IsNullOrWhiteSpace(tbPN.Text))
+            if (string.IsNullOrWhiteSpace(tbPath.Text) || string.IsNullOrWhiteSpace(tbCN.Text))
             {
                 MessageBox.Show("Please fill all the fields");
                 return;
@@ -235,6 +235,23 @@ namespace MyZeroTool
             {
                 frm.ShowDialog();
             }
+        }
+    }
+
+    static class StringExtensions
+    {
+        public static string ReplaceCompanyName(this string s, bool useProjectName)
+        {
+            if (useProjectName) 
+            {
+                return s
+                    .Replace(Settings.ExistingCompanyName, Settings.NewCompanyName)
+                    .Replace(Settings.ExistingProjectName, Settings.NewProjectName);
+            }
+
+            return s
+                .Replace($"{Settings.ExistingCompanyName}.{Settings.ExistingProjectName}", $"{Settings.NewCompanyName}")
+                .Replace(Settings.ExistingProjectName, Settings.NewCompanyName);
         }
     }
 }
