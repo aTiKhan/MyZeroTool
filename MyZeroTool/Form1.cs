@@ -34,6 +34,13 @@ namespace MyZeroTool
                 _bw.ReportProgress(0, "#### PROCESSING FILE CONTENTS ####");
                 UpdateFileContents();
             }
+
+            if (Settings.RemoveBoms)
+            {
+                _bw.ReportProgress(0, "###### REMOVING BOMs ######");
+                RemoveBoms();
+            }
+
             _bw.ReportProgress(0, "############# DONE! ##############");
         }
 
@@ -51,7 +58,7 @@ namespace MyZeroTool
                         _bw.ReportProgress(0, $"RENAMING DIRECTORY: {StripRootPath(subInfo.FullName)} ...");
                         subName = subName.ReplaceCompanyName(!string.IsNullOrWhiteSpace(tbPN.Text));
                         subInfo.MoveTo(Path.Combine(subInfo.Parent?.FullName ?? "", subName));
-                        _bw.ReportProgress(1);
+                        _bw.ReportProgress(1, "[OK]");
                     }
                 }
                 catch (Exception e)
@@ -67,14 +74,14 @@ namespace MyZeroTool
             var companyList = Directory.GetFiles(Settings.RootPath, $"*{Settings.ExistingCompanyName}*", SearchOption.AllDirectories);
             var projectList = Directory.GetFiles(Settings.RootPath, $"*{Settings.ExistingProjectName}*", SearchOption.AllDirectories);
             var mergedList = companyList.Union(projectList).ToList();
-            _bw.ReportProgress(1);
+            _bw.ReportProgress(1, "[OK]");
             foreach (var file in mergedList)
             {
                 try
                 {
                     _bw.ReportProgress(0, $"RENAMING FILE: {StripRootPath(file)} ...");
                     File.Move(file, file.ReplaceCompanyName(!string.IsNullOrWhiteSpace(tbPN.Text)));
-                    _bw.ReportProgress(1);
+                    _bw.ReportProgress(1, "[OK]");
                 }
                 catch (Exception e)
                 {
@@ -87,7 +94,7 @@ namespace MyZeroTool
         {
             _bw.ReportProgress(0, "Getting list of source files for content update...");
             var fileList = Directory.EnumerateFiles(Settings.RootPath, "*", SearchOption.AllDirectories);
-            _bw.ReportProgress(1);
+            _bw.ReportProgress(1, "[OK]");
             foreach (var file in fileList)
             {
                 if (Settings.SourceFileExtensions.Any(x => file.EndsWith(x.Trim(), StringComparison.OrdinalIgnoreCase)))
@@ -98,7 +105,48 @@ namespace MyZeroTool
                         var text = File.ReadAllText(file);
                         text = text.ReplaceCompanyName(!string.IsNullOrWhiteSpace(tbPN.Text));
                         File.WriteAllText(file, text);
-                        _bw.ReportProgress(1);
+                        _bw.ReportProgress(1, "[OK]");
+                    }
+                    catch (Exception e)
+                    {
+                        _bw.ReportProgress(0, $"ERROR: {e.Message}");
+                    }
+                }
+            }
+        }
+
+        private void RemoveBoms()
+        {
+            _bw.ReportProgress(0, "Getting list of files for BOM removal...");
+            var fileList = Directory.EnumerateFiles(Settings.RootPath, "*", SearchOption.AllDirectories);
+            _bw.ReportProgress(1, "[OK]");
+            foreach (var file in fileList)
+            {
+                if (Settings.SourceFileExtensions.Any(x => file.EndsWith(x.Trim(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    try
+                    {
+                        _bw.ReportProgress(0, $"FILE: {StripRootPath(file)} ...");
+                        var filestream = File.OpenRead(file);
+                        var applicable = false;
+                        if (filestream.Length >= 3)
+                        {
+                            var buffer = new byte[3];
+                            filestream.Read(buffer, 0, buffer.Length);
+                            if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
+                                applicable = true;
+                            filestream.Close();
+                        }
+                        if (applicable)
+                        {
+                            var content = File.ReadAllBytes(file);
+                            var newArray = new byte[content.Length - 3];
+                            Array.Copy(content, 3, newArray, 0, newArray.Length);
+                            File.WriteAllBytes(file, newArray);
+                            _bw.ReportProgress(1, "[OK]");
+                        }
+                        else
+                            _bw.ReportProgress(1, "[N/A]");
                     }
                     catch (Exception e)
                     {
@@ -124,10 +172,10 @@ namespace MyZeroTool
             ScrollLogsToBottom();
         }
 
-        private void LogOk()
+        private void LogAppendToLast(string textToAppend)
         {
             var item = lbLog.Items[lbLog.Items.Count - 1].ToString();
-            lbLog.Items[lbLog.Items.Count - 1] = item + " [OK]";
+            lbLog.Items[lbLog.Items.Count - 1] = item + " " + textToAppend;
             ScrollLogsToBottom();
         }
 
@@ -176,6 +224,7 @@ namespace MyZeroTool
             Settings.NewProjectName = tbPN.Text;
             Settings.RenameDirectories = cbRenameDirectories.Checked;
             Settings.RenameFiles = cbRenameFiles.Checked;
+            Settings.RemoveBoms = cbRemoveBoms.Checked;
             Settings.UpdateFileContents = cbUpdateFileContents.Checked;
             lbLog.Items.Clear();
             Disable();
@@ -189,9 +238,7 @@ namespace MyZeroTool
             _bw.ProgressChanged += (object s1, ProgressChangedEventArgs e1) =>
             {
                 if (e1.ProgressPercentage == 1)
-                {
-                    LogOk();
-                }
+                    LogAppendToLast(e1.UserState.ToString());
                 else
                 {
                     if (e1.UserState != null)

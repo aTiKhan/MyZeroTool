@@ -15,6 +15,7 @@ namespace MyZeroTool
         public static bool RenameDirectories { get; set; } = true;
         public static bool RenameFiles { get; set; } = true;
         public static bool UpdateFileContents { get; set; } = true;
+        public static bool RemoveBoms { get; set; } = true;
 
         public static string[] SourceFileExtensions { get; set; } =
         {

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.tbPath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
@@ -45,6 +46,8 @@
             this.cbRenameDirectories = new System.Windows.Forms.CheckBox();
             this.cbRenameFiles = new System.Windows.Forms.CheckBox();
             this.cbUpdateFileContents = new System.Windows.Forms.CheckBox();
+            this.cbRemoveBoms = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // tbPath
@@ -69,14 +72,14 @@
             // 
             // tbCN
             // 
-            this.tbCN.Location = new System.Drawing.Point(163, 90);
+            this.tbCN.Location = new System.Drawing.Point(163, 82);
             this.tbCN.Name = "tbCN";
             this.tbCN.Size = new System.Drawing.Size(163, 20);
             this.tbCN.TabIndex = 2;
             // 
             // tbPN
             // 
-            this.tbPN.Location = new System.Drawing.Point(163, 133);
+            this.tbPN.Location = new System.Drawing.Point(163, 125);
             this.tbPN.Name = "tbPN";
             this.tbPN.Size = new System.Drawing.Size(163, 20);
             this.tbPN.TabIndex = 3;
@@ -93,7 +96,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(163, 74);
+            this.label2.Location = new System.Drawing.Point(163, 66);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 13);
             this.label2.TabIndex = 5;
@@ -102,7 +105,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(163, 117);
+            this.label3.Location = new System.Drawing.Point(163, 109);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(120, 13);
             this.label3.TabIndex = 6;
@@ -110,9 +113,9 @@
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(332, 87);
+            this.btnStart.Location = new System.Drawing.Point(332, 79);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(93, 66);
+            this.btnStart.Size = new System.Drawing.Size(119, 66);
             this.btnStart.TabIndex = 7;
             this.btnStart.Text = "Start!";
             this.btnStart.UseVisualStyleBackColor = true;
@@ -125,15 +128,15 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lbLog.FormattingEnabled = true;
             this.lbLog.HorizontalScrollbar = true;
-            this.lbLog.Location = new System.Drawing.Point(15, 169);
+            this.lbLog.Location = new System.Drawing.Point(15, 156);
             this.lbLog.Name = "lbLog";
-            this.lbLog.Size = new System.Drawing.Size(524, 173);
+            this.lbLog.Size = new System.Drawing.Size(524, 186);
             this.lbLog.TabIndex = 8;
             // 
             // btnSaveLog
             // 
             this.btnSaveLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveLog.Location = new System.Drawing.Point(459, 130);
+            this.btnSaveLog.Location = new System.Drawing.Point(459, 122);
             this.btnSaveLog.Name = "btnSaveLog";
             this.btnSaveLog.Size = new System.Drawing.Size(80, 23);
             this.btnSaveLog.TabIndex = 9;
@@ -147,7 +150,7 @@
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(15, 130);
+            this.btnSettings.Location = new System.Drawing.Point(332, 55);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(119, 23);
             this.btnSettings.TabIndex = 10;
@@ -161,7 +164,7 @@
             this.cbAutoScroll.AutoSize = true;
             this.cbAutoScroll.Checked = true;
             this.cbAutoScroll.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbAutoScroll.Location = new System.Drawing.Point(459, 107);
+            this.cbAutoScroll.Location = new System.Drawing.Point(459, 99);
             this.cbAutoScroll.Name = "cbAutoScroll";
             this.cbAutoScroll.Size = new System.Drawing.Size(77, 17);
             this.cbAutoScroll.TabIndex = 11;
@@ -204,12 +207,24 @@
             this.cbUpdateFileContents.Text = "Update File Contents";
             this.cbUpdateFileContents.UseVisualStyleBackColor = true;
             // 
+            // cbRemoveBoms
+            // 
+            this.cbRemoveBoms.AutoSize = true;
+            this.cbRemoveBoms.Location = new System.Drawing.Point(15, 128);
+            this.cbRemoveBoms.Name = "cbRemoveBoms";
+            this.cbRemoveBoms.Size = new System.Drawing.Size(98, 17);
+            this.cbRemoveBoms.TabIndex = 15;
+            this.cbRemoveBoms.Text = "Remove BOMs";
+            this.toolTip1.SetToolTip(this.cbRemoveBoms, "Remove UTF-8 BOM Bytes from the beginning of files with specified extensions");
+            this.cbRemoveBoms.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AcceptButton = this.btnStart;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(551, 354);
+            this.Controls.Add(this.cbRemoveBoms);
             this.Controls.Add(this.cbUpdateFileContents);
             this.Controls.Add(this.cbRenameFiles);
             this.Controls.Add(this.cbRenameDirectories);
@@ -252,6 +267,8 @@
         private System.Windows.Forms.CheckBox cbRenameDirectories;
         private System.Windows.Forms.CheckBox cbRenameFiles;
         private System.Windows.Forms.CheckBox cbUpdateFileContents;
+        private System.Windows.Forms.CheckBox cbRemoveBoms;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
