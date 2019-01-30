@@ -19,7 +19,7 @@ namespace MyZeroTool
         public static string[] SourceFileExtensions { get; set; } =
         {
             ".xaml", // mobile 
-            ".html", ".js", ".ts", "cshtml",
+            ".html", ".js", ".ts", ".cshtml",
             ".cs", ".csproj", ".sln", ".config", ".user",
             ".json", ".txt", ".ps1", ".yml", ".nswag", ".conf", "Dockerfile", ".gitignore"
         };
